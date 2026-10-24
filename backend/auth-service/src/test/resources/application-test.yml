@@ -1,0 +1,22 @@
+spring:
+  cloud:
+    config:
+      enabled: false
+
+  datasource:
+    url: jdbc:h2:mem:carventure_auth_test;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+
+jwt:
+  secret: MzJfYnl0ZV9taW5pbXVtX3NlY3JldF9mb3JfaHM1MTJfand0X3NpZ25pbmdfa2V5X2NoYW5nZV9tZQ==
+  access-token-expiration-ms: 900000

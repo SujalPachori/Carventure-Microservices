@@ -1,0 +1,76 @@
+# ==== Maven ====
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# ==== Compiled class files ====
+*.class
+
+# ==== Logs ====
+*.log
+logs/
+spring.log
+
+# ==== Package files ====
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+!.mvn/wrapper/maven-wrapper.jar
+
+# ==== IDE - IntelliJ ====
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# ==== IDE - Eclipse ====
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+
+# ==== IDE - VS Code ====
+.vscode/
+
+# ==== IDE - NetBeans ====
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# ==== OS files ====
+.DS_Store
+Thumbs.db
+
+# ==== Environment / secrets — NEVER commit these ====
+# This service reads JWT_SECRET, DB_USERNAME, DB_PASSWORD,
+# ADMIN_BOOTSTRAP_USERNAME, ADMIN_BOOTSTRAP_PASSWORD, and
+# GOOGLE_OAUTH_CLIENT_ID from the environment - see application.yml.
+# If you ever add a local override file for these, ignore it here:
+.env
+.env.*
+!.env.example
+application-local.yml
+application-local.properties
+application-secrets.yml
+
+# ==== Test / coverage output ====
+*.exec
+/coverage/

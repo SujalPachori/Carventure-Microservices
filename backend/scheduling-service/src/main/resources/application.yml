@@ -1,0 +1,82 @@
+spring:
+  application:
+    name: scheduling-service
+
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/carventure_scheduling_prod}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate   # schema is owned by Flyway, not Hibernate
+    open-in-view: false    # keep transactions/connections short-lived, no lazy-loading in controllers
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all
+      retries: 3
+
+  # No spring.security.oauth2.resourceserver.jwt.* config here on purpose -
+  # auth-service has no issuer-discovery/JWKS endpoint to point at (symmetric
+  # HMAC signing). Verification is wired manually via the JwtDecoder @Bean in
+  # SecurityConfig, using the jwt.secret below.
+
+# Must be byte-for-byte identical to auth-service's jwt.secret (same env var
+# name, deliberately, so both services can share one JWT_SECRET in deployment).
+# auth-service: com.carventure.authservice.security.JwtUtil
+jwt:
+  secret: ${JWT_SECRET}
+  # auth-service's jjwt auto-selects the HMAC algorithm by secret byte length
+  # (HS384 for the 58-byte default secret above). If auth-service's deployed
+  # secret length changes, this must be updated to match or verification breaks.
+  mac-algorithm: ${JWT_MAC_ALGORITHM:HS384}
+
+services:
+  car-discovery:
+    url: ${CAR_DISCOVERY_SERVICE_URL:http://localhost:8081}
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+
+outbox:
+  publisher:
+    fixed-delay-ms: 2000
+
+server:
+  port: ${SERVER_PORT:8083}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+logging:
+  level:
+    com.cardrive.scheduling: INFO
+
+eureka:
+  instance:
+    hostname: localhost
+    prefer-ip-address: false

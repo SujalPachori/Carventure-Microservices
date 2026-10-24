@@ -1,0 +1,1 @@
+import { Link } from 'react-router-dom'; import { Page } from '../components/common/Page'; export function NotFound(){return <Page><div className="state"><h1>404</h1><p>That Carventure page does not exist.</p><Link className="btn btn-dark" to="/">Go home</Link></div></Page>}

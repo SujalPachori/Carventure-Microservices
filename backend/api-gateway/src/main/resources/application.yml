@@ -1,0 +1,121 @@
+server:
+  port: ${SERVER_PORT:8090}
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      server:
+        webflux:
+          httpclient:
+            connect-timeout: 3000
+            response-timeout: 10s
+          discovery:
+            locator:
+              enabled: false
+          routes:
+            - id: auth-service
+              uri: lb://auth-service
+              predicates:
+                - Path=/api/auth/**
+
+            - id: car-service
+              uri: lb://car
+              predicates:
+                - Path=/api/v1/car/**
+
+            - id: payment-service
+              uri: lb://payment-financing-service
+              predicates:
+                - Path=/api/v1/orders/**,/api/v1/payments/**
+
+            - id: scheduling-service
+              uri: lb://scheduling-service
+              predicates:
+                - Path=/api/v1/availability/**,/api/v1/availability,/api/v1/cars/**,/api/v1/test-drives/**
+
+            - id: admingovernance-service
+              uri: lb://admingovernance
+              predicates:
+                - Path=/api/v1/governance/**
+
+            # folder is "admin", but the Eureka name is "adminreporting"
+            - id: adminreporting-service
+              uri: lb://adminreporting
+              predicates:
+                - Path=/api/v1/reporting/**
+
+            - id: usermanagement-service
+              uri: lb://usermanagement
+              predicates:
+                - Path=/api/v1/user/**
+
+            - id: offer-negotiation-service
+              uri: lb://offer-negotiation-service
+              predicates:
+                - Path=/api/v1/offers/**
+
+            - id: engagement-service
+              uri: lb://engagement-service
+              predicates:
+                - Path=/api/v1/wishlist/**,/api/v1/reviews/**
+
+            - id: communication-service
+              uri: lb://communication-service
+              predicates:
+                - Path=/api/v1/notifications/**
+
+            # SSE - must never time out. Keep this route separate from
+            # /notifications so the timeout override applies only here.
+            - id: communication-stream
+              uri: lb://communication-service
+              predicates:
+                - Path=/api/v1/stream/**
+              metadata:
+                response-timeout: 0
+
+          globalcors:
+            # Without this, preflight OPTIONS requests never reach a route and
+            # the gateway answers them with 403 before any routing happens.
+            add-to-simple-url-handler-mapping: true
+            cors-configurations:
+              '[/**]':
+                # List, not a single string. localhost and 127.0.0.1 are
+                # DIFFERENT origins to the browser - allow both or you get a
+                # 403 "Invalid CORS request" depending on which URL you opened.
+                allowedOriginPatterns:
+                  - "http://localhost:*"
+                  - "http://127.0.0.1:*"
+                allowedMethods:
+                  - GET
+                  - POST
+                  - PUT
+                  - PATCH
+                  - DELETE
+                  - OPTIONS
+                allowedHeaders: "*"
+                # The frontend sends the JWT in an Authorization header from
+                # localStorage, not in cookies, so credentials aren't needed.
+                # Leaving it on is what makes the "*" combinations brittle.
+                allowCredentials: false
+
+          # If the downstream service ever also sets CORS headers, the browser
+          # sees two Access-Control-Allow-Origin values and blocks the response.
+          # This keeps only the first one.
+          default-filters:
+            - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_FIRST
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka}
+  instance:
+    hostname: localhost
+    prefer-ip-address: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway

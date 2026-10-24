@@ -1,0 +1,45 @@
+# Build output
+target/
+build/
+*.class
+*.jar
+!.mvn/wrapper/maven-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+.classpath
+.project
+.settings/
+.factorypath
+.sts4-cache/
+
+# OS
+.DS_Store
+
+# Runtime uploads (user-generated images/documents)
+uploads/
+**/uploads/
+
+# Local secrets / env files
+.env
+*.env
+application-local.*
+application-secrets.*
+
+# Logs
+*.log
+HELP.md
+
+carpricepredictor/
+node_modules/
+dist/
+.next/
+.vscode/
+venv/
+.venv/
+__pycache__/
+*.pyc
